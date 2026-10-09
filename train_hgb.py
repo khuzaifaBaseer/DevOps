@@ -10,6 +10,7 @@ TARGET = sys.argv[1] if len(sys.argv) > 1 else "Cat"
 
 FEATURES = [c for c in pd.read_csv("data/processed.csv", nrows=1).select_dtypes(include="number").columns if c != "Src_Port"]
 df = pd.read_csv("data/processed.csv")
+df = df[df["Cat"] != "Normal"]
 le = LabelEncoder()
 y = le.fit_transform(df[TARGET])
 X = df[FEATURES].values.astype(np.float32)
@@ -21,7 +22,7 @@ scaler = MinMaxScaler()
 X_tr = scaler.fit_transform(X_tr)
 X_te = scaler.transform(X_te)
 
-model = HistGradientBoostingClassifier(max_iter=300, class_weight="balanced", random_state=42)
+model = HistGradientBoostingClassifier(max_iter=300, random_state=42)
 model.fit(X_tr, y_tr)
 probs = model.predict_proba(X_te)
 pred = probs.argmax(1)
